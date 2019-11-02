@@ -33,7 +33,6 @@ defmodule Astrox.Api.Http do
            resp
        ) do
     %{resp | body: :zlib.gunzip(body), headers: Map.drop(headers, ["Content-Encoding"])}
-    |> process_response
   end
 
   defp process_response(
