@@ -85,7 +85,7 @@ defmodule Astrox.Client do
   end
 
   def default_config() do
-    [:username, :password, :security_token, :client_id, :client_secret, :endpoint]
+    [:username, :password, :security_token, :client_id, :client_secret, :endpoint, :refresh_token]
     |> Enum.map(&{&1, get_val_from_env(&1)})
     |> Enum.filter(fn {_, v} -> v end)
     |> Enum.into(%{})

@@ -5,6 +5,18 @@ defmodule Astrox.Auth.OAuth do
   require Logger
   @behaviour Astrox.Auth
 
+  def login(%{refresh_token: _} = conf, starting_struct) do
+    login_payload =
+      conf
+      |> Map.put(:grant_type, "refresh_token")
+      |> Map.delete(:endpoint)
+
+    "/services/oauth2/token?#{URI.encode_query(login_payload)}"
+    |> Astrox.post(starting_struct)
+    |> handle_login_response
+    |> maybe_add_api_version(starting_struct)
+  end
+
   def login(conf, starting_struct) do
     login_payload =
       conf

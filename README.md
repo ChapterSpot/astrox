@@ -9,6 +9,7 @@ Elixir library for interacting with the Force.com REST API.
 ## Usage
 
 Add Astrox to your dependency list
+
 ```elixir
   defp deps do
     [ {:astrox, "~> 0.4"}
@@ -20,6 +21,7 @@ At compile time Astrox will query the Force.com REST API and generate modules fo
 SObjects you have configured and permission to see.
 
 If you see a warning like
+
 ```elixir
 23:37:02.057 [warn]  Cannot log into SFDC API. Please ensure you have Astrox properly configured.
 Got error code 400 and message %{"error" => "invalid_client_id", "error_description" => "client identifier invalid"}
@@ -76,16 +78,18 @@ config :astrox, Astrox.Client,
   password: "my_super_secret_password",
   security_token: "EMAILED_FROM_SALESFORCE",
   client_id: "CONNECTED_APP_OAUTH_CLIENT_ID",
-  client_secret: "CONNECTED_APP_OAUTH_CLIENT_SECRET"
+  client_secret: "CONNECTED_APP_OAUTH_CLIENT_SECRET",
+  refresh_token: "CONNECTED_APP_OAUTH_REFRESH_TOKEN"
 ```
 
 or these environment variables:
 
-* `SALESFORCE_USERNAME`
-* `SALESFORCE_PASSWORD`
-* `SALESFORCE_SECURITY_TOKEN`
-* `SALESFORCE_CLIENT_ID`
-* `SALESFORCE_CLIENT_SECRET`
+- `SALESFORCE_USERNAME`
+- `SALESFORCE_PASSWORD`
+- `SALESFORCE_SECURITY_TOKEN`
+- `SALESFORCE_CLIENT_ID`
+- `SALESFORCE_CLIENT_SECRET`
+- `SALESFORCE_REFRESH_TOKEN`
 
 HTTPoison request-specific options may also be configured:
 
@@ -119,6 +123,7 @@ Astrox allows additional configuration of API endpoint and API version via the
 
 This example shows how to use both an older API version and the SalesForce
 sandbox API.
+
 ```elixir
 Astrox.Client.default_config
 |> Astrox.Client.login(%Astrox.Client{endpoint: "https://test.salesforce.com", api_version: "34.0"})
@@ -139,7 +144,7 @@ Tests can be run automatically when files change with
     mix test.watch --stale
 
 Tests mock the api calls to the Salesforce API using Mox to set expectations on
-`Astrox.Api.MockHttp.raw_request`.  To know what to put in a mock response just
+`Astrox.Api.MockHttp.raw_request`. To know what to put in a mock response just
 run the client in `iex` and look for the debug logging response from http.ex.
 Make sure to scrub any responses for sensitive data before including them
 in a commit.
@@ -153,55 +158,54 @@ Example assuming environment variables are in place with login info
     iex(2)> Astrox.query("select Id, Name from Account order by CreatedDate desc", client)
     14:43:05.896 file=astrox/lib/astrox/api/http.ex line=19 [debug] Elixir.Astrox.Api.Http.raw_request response=%{done: false, nextRecordsUrl: "/services/data/v4
 
-Just take the data after `response=` and throw it in a Mox expectation.  See
+Just take the data after `response=` and throw it in a Mox expectation. See
 existing tests for full examples
 
     response = %{access_token: "redacted"}
     Astrox.Api.MockHttp
     |> expect(:raw_request, fn(:get, ^expected_url, _, ^auth_header, _) -> response end)
 
-
 ## Current State
 
 See https://www.salesforce.com/us/developer/docs/api_rest/
 
- - [x] List API versions available
- - [x] Login (Username/Password/Client Key/Client Secret)
- - [ ] Login (Web Server OAuth)
- - [ ] Login (User-Agent OAuth)
- - [ ] OAuth Refresh Token
- - [x] Resources by Version
- - [x] Limits
- - [x] Describe Global
- - [x] SObject Basic Information
- - [x] SObject Describe
- - [x] SObject Get Deleted
- - [x] SObject Get Updated
- - [ ] SObject Named Layouts
- - [x] SObject Rows
- - [x] SObject Rows by External ID
- - [ ] SObject ApprovalLayouts
- - [ ] SObject CompactLayouts
- - [ ] SObject Layouts
- - [x] SObject Blob Retrieve
- - [ ] SObject Quick Actions
- - [ ] SObject Suggested Articles for Case
- - [ ] SObject User Password
- - [ ] AppMenu
- - [ ] Compact Layouts
- - [ ] FlexiPage
- - [ ] Process Approvals
- - [ ] Process Rules
- - [x] Query
- - [x] QueryAll
- - [x] Quick Actions
- - [ ] Search
- - [ ] Search Scope and Order
- - [ ] Search Result Layouts
- - [x] Recently Viewed Items
- - [ ] Search Suggested Article Title Matches
- - [x] Tabs
- - [x] Themes
+- [x] List API versions available
+- [x] Login (Username/Password/Client Key/Client Secret)
+- [ ] Login (Web Server OAuth)
+- [ ] Login (User-Agent OAuth)
+- [x] OAuth Refresh Token
+- [x] Resources by Version
+- [x] Limits
+- [x] Describe Global
+- [x] SObject Basic Information
+- [x] SObject Describe
+- [x] SObject Get Deleted
+- [x] SObject Get Updated
+- [ ] SObject Named Layouts
+- [x] SObject Rows
+- [x] SObject Rows by External ID
+- [ ] SObject ApprovalLayouts
+- [ ] SObject CompactLayouts
+- [ ] SObject Layouts
+- [x] SObject Blob Retrieve
+- [ ] SObject Quick Actions
+- [ ] SObject Suggested Articles for Case
+- [ ] SObject User Password
+- [ ] AppMenu
+- [ ] Compact Layouts
+- [ ] FlexiPage
+- [ ] Process Approvals
+- [ ] Process Rules
+- [x] Query
+- [x] QueryAll
+- [x] Quick Actions
+- [ ] Search
+- [ ] Search Scope and Order
+- [ ] Search Result Layouts
+- [x] Recently Viewed Items
+- [ ] Search Suggested Article Title Matches
+- [x] Tabs
+- [x] Themes
 
 # License
 
