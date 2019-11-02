@@ -9,7 +9,13 @@ defmodule Astrox.ClientTest do
     @server_url "https://astrox.my.salesforce.com/services/Soap/u/43.0/00Dd0000000cQ8L"
     @org_id "org_id"
     @response """
-      <?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns=\"urn:partner.soap.sforce.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginResponse><result><metadataServerUrl>#{@server_url}</metadataServerUrl><passwordExpired>false</passwordExpired><sandbox>false</sandbox><serverUrl>#{@server_url}</serverUrl><sessionId>#{@session_id}</sessionId><userId>005d0000001Jb9tAAC</userId><userInfo><accessibilityMode>false</accessibilityMode><chatterExternal>false</chatterExternal><currencySymbol>$</currencySymbol><orgAttachmentFileSizeLimit>5242880</orgAttachmentFileSizeLimit><orgDefaultCurrencyIsoCode>USD</orgDefaultCurrencyIsoCode><orgDefaultCurrencyLocale>en_US</orgDefaultCurrencyLocale><orgDisallowHtmlAttachments>false</orgDisallowHtmlAttachments><orgHasPersonAccounts>true</orgHasPersonAccounts><organizationId>#{@org_id}</organizationId><organizationMultiCurrency>false</organizationMultiCurrency><organizationName>MY-ORG</organizationName><profileId>00ed0000000Ods2AAC</profileId><roleId>00Ed0000000II8UEAW</roleId><sessionSecondsValid>7200</sessionSecondsValid><userDefaultCurrencyIsoCode xsi:nil=\"true\"/><userEmail>astrox@example.com</userEmail><userFullName>John Doe</userFullName><userId>005d0000001Jb9tAAC</userId><userLanguage>en_US</userLanguage><userLocale>en_US</userLocale><userName>astrox@example.com</userName><userTimeZone>America/New_York</userTimeZone><userType>Standard</userType><userUiSkin>Theme3</userUiSkin></userInfo></result></loginResponse></soapenv:Body></soapenv:Envelope>
+      <?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns=\"urn:partner.soap.sforce.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginResponse><result><metadataServerUrl>#{
+      @server_url
+    }</metadataServerUrl><passwordExpired>false</passwordExpired><sandbox>false</sandbox><serverUrl>#{
+      @server_url
+    }</serverUrl><sessionId>#{@session_id}</sessionId><userId>005d0000001Jb9tAAC</userId><userInfo><accessibilityMode>false</accessibilityMode><chatterExternal>false</chatterExternal><currencySymbol>$</currencySymbol><orgAttachmentFileSizeLimit>5242880</orgAttachmentFileSizeLimit><orgDefaultCurrencyIsoCode>USD</orgDefaultCurrencyIsoCode><orgDefaultCurrencyLocale>en_US</orgDefaultCurrencyLocale><orgDisallowHtmlAttachments>false</orgDisallowHtmlAttachments><orgHasPersonAccounts>true</orgHasPersonAccounts><organizationId>#{
+      @org_id
+    }</organizationId><organizationMultiCurrency>false</organizationMultiCurrency><organizationName>MY-ORG</organizationName><profileId>00ed0000000Ods2AAC</profileId><roleId>00Ed0000000II8UEAW</roleId><sessionSecondsValid>7200</sessionSecondsValid><userDefaultCurrencyIsoCode xsi:nil=\"true\"/><userEmail>astrox@example.com</userEmail><userFullName>John Doe</userFullName><userId>005d0000001Jb9tAAC</userId><userLanguage>en_US</userLanguage><userLocale>en_US</userLocale><userName>astrox@example.com</userName><userTimeZone>America/New_York</userTimeZone><userType>Standard</userType><userUiSkin>Theme3</userUiSkin></userInfo></result></loginResponse></soapenv:Body></soapenv:Envelope>
     """
 
     test "sets the auth header and endpoint when successful" do
@@ -24,10 +30,12 @@ defmodule Astrox.ClientTest do
 
       client = Astrox.Client.login(config)
 
-      assert client.authorization_header == [{
-        "Authorization",
-        "Bearer #{@session_id}"
-      }]
+      assert client.authorization_header == [
+               {
+                 "Authorization",
+                 "Bearer #{@session_id}"
+               }
+             ]
 
       assert client.endpoint == "https://astrox.my.salesforce.com/"
     end
@@ -66,7 +74,6 @@ defmodule Astrox.ClientTest do
 
       response = %{
         access_token: access_token,
-
         id: "https://login.salesforce.com/id/#{org_id}/005d0000001Jb9tAAC",
         instance_url: "https://astrox.my.salesforce.com",
         issued_at: "1520973086810",
@@ -86,51 +93,60 @@ defmodule Astrox.ClientTest do
         api_version: "123.0"
       }
 
-      {:ok,
-       access_token: access_token,
-       config: config
-      }
+      {:ok, access_token: access_token, config: config}
     end
 
     test "sets the auth header and endpoint when successful", %{
-      config: config, access_token: access_token
+      config: config,
+      access_token: access_token
     } do
       client = Astrox.Client.login(config)
-      assert client.authorization_header == [{
-        "Authorization",
-        "Bearer #{access_token}"
-      }]
+
+      assert client.authorization_header == [
+               {
+                 "Authorization",
+                 "Bearer #{access_token}"
+               }
+             ]
+
       assert client.endpoint == "https://astrox.my.salesforce.com"
     end
 
     test "defaults the api_version if not specified in the starting_struct", %{
-      config: config, access_token: access_token
+      config: config,
+      access_token: access_token
     } do
       client = Astrox.Client.login(config)
 
-      assert client.authorization_header == [{
-        "Authorization",
-        "Bearer #{access_token}"
-      }]
+      assert client.authorization_header == [
+               {
+                 "Authorization",
+                 "Bearer #{access_token}"
+               }
+             ]
+
       assert client.api_version == "43.0"
     end
 
     test "allows overriding the api_version as specified in the starting_struct", %{
-      config: config, access_token: access_token
+      config: config,
+      access_token: access_token
     } do
       starting_struct = %Astrox.Client{api_version: "123.0"}
       client = Astrox.Client.login(config, starting_struct)
 
-      assert client.authorization_header == [{
-        "Authorization",
-        "Bearer #{access_token}"
-      }]
+      assert client.authorization_header == [
+               {
+                 "Authorization",
+                 "Bearer #{access_token}"
+               }
+             ]
+
       assert client.api_version == "123.0"
     end
   end
 
   describe "default login behavior" do
-
     test "default endpoint provided by client struct is login.salesforce.com" do
       initial_struct = %Astrox.Client{}
       assert initial_struct.endpoint == "https://login.salesforce.com"
@@ -162,15 +178,16 @@ defmodule Astrox.ClientTest do
 
       Astrox.Api.MockHttp
       |> expect(:raw_request, fn :post, url, _, _, _ ->
-          assert String.starts_with?(url, "https://login.salesforce.com") == true
-          response
-          end)
+        assert String.starts_with?(url, "https://login.salesforce.com") == true
+        response
+      end)
 
       Astrox.Client.login(config)
     end
 
     test "when provided config with new endpoint, uses provided endpoint" do
       endpoint = "https://test.salesforce.com"
+
       config = %{
         password: "password",
         security_token: "security_token",
@@ -191,9 +208,9 @@ defmodule Astrox.ClientTest do
 
       Astrox.Api.MockHttp
       |> expect(:raw_request, fn :post, url, _, _, _ ->
-          assert String.starts_with?(url, endpoint) == true
-          response
-          end)
+        assert String.starts_with?(url, endpoint) == true
+        response
+      end)
 
       Astrox.Client.login(config)
     end
@@ -203,7 +220,7 @@ defmodule Astrox.ClientTest do
     test "when successful sets servies on the client" do
       response = %{
         jobs: "/services/data/v43.0/jobs",
-        query: "/services/data/v43.0/query",
+        query: "/services/data/v43.0/query"
       }
 
       endpoint = "https://astrox.my.salesforce.com"
@@ -212,7 +229,7 @@ defmodule Astrox.ClientTest do
       services_url = endpoint <> "/services/data/v" <> api_version
 
       Astrox.Api.MockHttp
-      |> expect(:raw_request, fn(:get, ^services_url, _, ^auth_header, _) -> response end)
+      |> expect(:raw_request, fn :get, ^services_url, _, ^auth_header, _ -> response end)
 
       client = %Astrox.Client{
         endpoint: endpoint,
@@ -220,7 +237,7 @@ defmodule Astrox.ClientTest do
         api_version: api_version
       }
 
-      client = client |> Astrox.Client.locate_services
+      client = client |> Astrox.Client.locate_services()
       assert client.services == response
     end
   end

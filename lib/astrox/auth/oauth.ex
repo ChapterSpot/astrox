@@ -42,6 +42,7 @@ defmodule Astrox.Auth.OAuth do
   defp maybe_add_api_version(client_map, %{api_version: api_version}) do
     Map.put(client_map, :api_version, api_version)
   end
+
   defp maybe_add_api_version(client_map, _) do
     client_map
   end

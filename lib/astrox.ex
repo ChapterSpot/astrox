@@ -6,37 +6,37 @@ defmodule Astrox do
   require Logger
 
   @type client :: map
-  @type astrox_response :: map | {number, any} | String.t
+  @type astrox_response :: map | {number, any} | String.t()
   @type method :: :get | :put | :post | :patch | :delete
 
   @api Application.get_env(:astrox, :api) || Astrox.Api.Http
 
-  @spec json_request(method, String.t, map | String.t, list, list) :: astrox_response
+  @spec json_request(method, String.t(), map | String.t(), list, list) :: astrox_response
   def json_request(method, url, body, headers, options) do
     @api.raw_request(method, url, format_body(body), headers, options)
   end
 
-  @spec post(String.t, map | String.t, client) :: astrox_response
+  @spec post(String.t(), map | String.t(), client) :: astrox_response
   def post(path, body \\ "", client) do
     url = client.endpoint <> path
     headers = [{"Content-Type", "application/json"}]
     json_request(:post, url, body, headers ++ client.authorization_header, [])
   end
 
-  @spec patch(String.t, String.t, client) :: astrox_response
+  @spec patch(String.t(), String.t(), client) :: astrox_response
   def patch(path, body \\ "", client) do
     url = client.endpoint <> path
     headers = [{"Content-Type", "application/json"}]
     json_request(:patch, url, body, headers ++ client.authorization_header, [])
   end
 
-  @spec delete(String.t, client) :: astrox_response
+  @spec delete(String.t(), client) :: astrox_response
   def delete(path, client) do
     url = client.endpoint <> path
     @api.raw_request(:delete, url, "", client.authorization_header, [])
   end
 
-  @spec get(String.t, map | String.t, list, client) :: astrox_response
+  @spec get(String.t(), map | String.t(), list, client) :: astrox_response
   def get(path, body \\ "", headers \\ [], client) do
     url = client.endpoint <> path
     json_request(:get, url, body, headers ++ client.authorization_header, [])
@@ -58,7 +58,7 @@ defmodule Astrox do
     quick_actions: :quickActions,
     recently_viewed_items: :recent,
     tabs: :tabs,
-    theme: :theme,
+    theme: :theme
   ]
 
   for {function, service} <- @basic_services do
@@ -70,7 +70,7 @@ defmodule Astrox do
     end
   end
 
-  @spec describe_sobject(String.t, client) :: astrox_response
+  @spec describe_sobject(String.t(), client) :: astrox_response
   def describe_sobject(sobject, %Astrox.Client{} = client) do
     base = service_endpoint(client, :sobjects)
 
@@ -85,7 +85,7 @@ defmodule Astrox do
     |> get(client)
   end
 
-  @spec metadata_changes_since(String.t, String.t, client) :: astrox_response
+  @spec metadata_changes_since(String.t(), String.t(), client) :: astrox_response
   def metadata_changes_since(sobject, since, client) do
     base = service_endpoint(client, :sobjects)
 
@@ -99,25 +99,25 @@ defmodule Astrox do
     |> post(body, client)
   end
 
-  @spec query(String.t, client) :: astrox_response
+  @spec query(String.t(), client) :: astrox_response
   def query(query, %Astrox.Client{} = client) do
     base = service_endpoint(client, :query)
-    params = %{"q" => query} |> URI.encode_query
+    params = %{"q" => query} |> URI.encode_query()
 
     "#{base}/?#{params}"
     |> get(client)
   end
 
-  @spec query_all(String.t, client) :: astrox_response
+  @spec query_all(String.t(), client) :: astrox_response
   def query_all(query, %Astrox.Client{} = client) do
     base = service_endpoint(client, :queryAll)
-    params = %{"q" => query} |> URI.encode_query
+    params = %{"q" => query} |> URI.encode_query()
 
     "#{base}/?#{params}"
     |> get(client)
   end
 
-  @spec service_endpoint(client, atom) :: String.t
+  @spec service_endpoint(client, atom) :: String.t()
   defp service_endpoint(%Astrox.Client{services: services}, service) do
     Map.get(services, service)
   end

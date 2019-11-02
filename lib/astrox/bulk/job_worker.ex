@@ -14,7 +14,7 @@ defmodule Astrox.Bulk.JobWorker do
   def handle_info(:after_init, state) do
     client = Keyword.fetch!(state, :client)
     sobject = Keyword.fetch!(state, :sobject)
-    handlers = Keyword.get(state,:handlers, [])
+    handlers = Keyword.get(state, :handlers, [])
     interval = Keyword.get(state, :status_interval, 10000)
 
     job = Astrox.Bulk.create_query_job(sobject, client)
@@ -27,7 +27,7 @@ defmodule Astrox.Bulk.JobWorker do
   def handle_info(:fetch_status, state) do
     client = Keyword.fetch!(state, :client)
     job = Keyword.fetch!(state, :job)
-    handlers = Keyword.get(state,:handlers, [])
+    handlers = Keyword.get(state, :handlers, [])
 
     updated_job = Astrox.Bulk.fetch_job_status(job, client)
 
@@ -45,5 +45,4 @@ defmodule Astrox.Bulk.JobWorker do
     notify_handlers({:job_closed, closed_job}, handlers)
     {:stop, :normal, Keyword.put(state, :job, closed_job)}
   end
-
 end
