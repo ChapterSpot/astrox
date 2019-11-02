@@ -1,6 +1,6 @@
-defmodule Forcex.Bulk.BatchWorker do
+defmodule Astrox.Bulk.BatchWorker do
   use GenServer
-  import Forcex.Bulk.Util
+  import Astrox.Bulk.Util
 
   def start_link(params) do
     GenServer.start_link(__MODULE__, params)
@@ -18,7 +18,7 @@ defmodule Forcex.Bulk.BatchWorker do
     handlers = Keyword.fetch!(state,:handlers)
     interval = Keyword.get(state, :status_interval, 10000)
 
-    batch = Forcex.Bulk.create_query_batch(query, job, client)
+    batch = Astrox.Bulk.create_query_batch(query, job, client)
     notify_handlers({:batch_created, batch}, handlers)
     :timer.send_interval(interval, :fetch_status)
 
@@ -38,7 +38,7 @@ defmodule Forcex.Bulk.BatchWorker do
     handlers = Keyword.fetch!(state, :handlers)
     seen_results = Keyword.get(state, :results, [])
 
-    results = Forcex.Bulk.fetch_batch_result_status(batch, client)
+    results = Astrox.Bulk.fetch_batch_result_status(batch, client)
     case (results -- seen_results) do
       list when is_list(list) ->
         for result <- list do
@@ -55,7 +55,7 @@ defmodule Forcex.Bulk.BatchWorker do
     batch = Keyword.fetch!(state, :batch)
     handlers = Keyword.fetch!(state, :handlers)
 
-    updated_batch = Forcex.Bulk.fetch_batch_status(batch, client)
+    updated_batch = Astrox.Bulk.fetch_batch_status(batch, client)
 
     notify_handlers({:batch_status, updated_batch}, handlers)
 

@@ -2,7 +2,7 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :forcex, :api, Forcex.Api.Http
+config :astrox, :api, Astrox.Api.Http
 config :logger,
   :console,
   format: "\n$time $metadata[$level] $levelpad$message\n",

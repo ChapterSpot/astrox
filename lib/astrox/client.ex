@@ -1,4 +1,4 @@
-defmodule Forcex.Client do
+defmodule Astrox.Client do
   require Logger
 
   @default_endpoint "https://login.salesforce.com"
@@ -43,7 +43,7 @@ defmodule Forcex.Client do
 
   Application configuration
 
-      config :forcex, Forcex.Client,
+      config :astrox, Astrox.Client,
         username: "user@example.com",
         password: "my_super_secret_password",
         security_token: "EMAILED_FROM_SALESFORCE",
@@ -58,8 +58,8 @@ defmodule Forcex.Client do
   services are availabe for your deployment.
 
       client =
-        Forcex.Client.login
-        |> Forcex.Client.locate_services
+        Astrox.Client.login
+        |> Astrox.Client.locate_services
   """
   def login(config \\ default_config()) do
     login(config, %__MODULE__{endpoint: config[:endpoint] || @default_endpoint})
@@ -68,13 +68,13 @@ defmodule Forcex.Client do
   def login(conf, starting_struct) do
     Logger.debug("conf=" <> inspect(conf))
     case conf do
-      %{client_id: _} -> struct(__MODULE__, Forcex.Auth.OAuth.login(conf, starting_struct))
-      %{security_token: _} -> struct(__MODULE__, Forcex.Auth.SessionId.login(conf, starting_struct))
+      %{client_id: _} -> struct(__MODULE__, Astrox.Auth.OAuth.login(conf, starting_struct))
+      %{security_token: _} -> struct(__MODULE__, Astrox.Auth.SessionId.login(conf, starting_struct))
     end
   end
 
   def locate_services(client) do
-    services = Forcex.services(client)
+    services = Astrox.services(client)
     client = %{client | services: services}
     Logger.debug(inspect(client))
     client
@@ -93,7 +93,7 @@ defmodule Forcex.Client do
     |> System.get_env
     |> case do
       nil ->
-        Application.get_env(:forcex, __MODULE__, [])
+        Application.get_env(:astrox, __MODULE__, [])
         |> Keyword.get(key)
       val -> val
     end

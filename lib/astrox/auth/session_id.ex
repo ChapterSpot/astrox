@@ -1,11 +1,11 @@
-defmodule Forcex.Auth.SessionId do
+defmodule Astrox.Auth.SessionId do
   @moduledoc """
   Auth via a session id
   """
 
   require Logger
-  @behaviour Forcex.Auth
-  @api Application.get_env(:forcex, :api) || Forcex.Api.Http
+  @behaviour Astrox.Auth
+  @api Application.get_env(:astrox, :api) || Astrox.Api.Http
 
   def login(conf, starting_struct) do
     schema = "http://www.w3.org/2001/XMLSchema"

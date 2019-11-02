@@ -1,6 +1,6 @@
 should_fix = [
-  {"lib/forcex/bulk.ex", :no_return},
-  {"lib/mix/tasks/compile.forcex.ex", :callback_info_missing},
+  {"lib/astrox/bulk.ex", :no_return},
+  {"lib/mix/tasks/compile.astrox.ex", :callback_info_missing},
 ]
 
 known_bug = [

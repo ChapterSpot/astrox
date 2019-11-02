@@ -1,7 +1,7 @@
 defmodule BulkJobController do
   use GenServer
-  use Forcex.Bulk.BatchHandler
-  use Forcex.Bulk.JobHandler
+  use Astrox.Bulk.BatchHandler
+  use Astrox.Bulk.JobHandler
 
   def start_link(params) do
     GenServer.start_link(__MODULE__, params)
@@ -15,7 +15,7 @@ defmodule BulkJobController do
   def handle_info(:after_init, state) do
     sobject = Keyword.fetch!(state, :sobject)
     client = Keyword.fetch!(state, :client)
-    {:ok, pid} = Forcex.Bulk.JobWorker.start_link({:query, sobject: sobject, client: client, handlers: [self()]})
+    {:ok, pid} = Astrox.Bulk.JobWorker.start_link({:query, sobject: sobject, client: client, handlers: [self()]})
     {:noreply, Keyword.put(state, :job_worker, pid)}
   end
 
@@ -35,7 +35,7 @@ defmodule BulkJobController do
     client = Keyword.fetch!(state, :client)
     queries = Keyword.fetch!(state, :queries)
     for query <- queries do
-      {:ok, _pid} = Forcex.Bulk.BatchWorker.start_link({:query, client: client, job: job, query: query, handlers: [self()]})
+      {:ok, _pid} = Astrox.Bulk.BatchWorker.start_link({:query, client: client, job: job, query: query, handlers: [self()]})
     end
     IO.puts "Job #{job["id"]} created"
     {:noreply, state}
@@ -79,7 +79,7 @@ defmodule BulkJobController do
   end
   def handle_batch_partial_result_ready(batch, results, state) do
     client = Keyword.fetch!(state, :client)
-    partial_results = Forcex.Bulk.fetch_results(results, batch, client)
+    partial_results = Astrox.Bulk.fetch_results(results, batch, client)
     IO.puts("Batch #{batch["id"]} partial results: #{inspect partial_results}")
 
     {:noreply, state}

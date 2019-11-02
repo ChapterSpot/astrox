@@ -1,8 +1,8 @@
-defmodule Forcex.Bulk do
+defmodule Astrox.Bulk do
   use HTTPoison.Base
   require Logger
 
-  @user_agent [{"User-agent", "forcex"}]
+  @user_agent [{"User-agent", "astrox"}]
   @accept [{"Accept", "application/json"}]
   @accept_encoding [{"Accept-Encoding", "gzip"}]
   @content_type [{"Content-Type", "application/json"}]
@@ -28,7 +28,7 @@ defmodule Forcex.Bulk do
   def process_response(%HTTPoison.Response{body: body, status_code: status}), do: {status, body}
 
   defp extra_options() do
-    Application.get_env(:forcex, :request_options, [])
+    Application.get_env(:astrox, :request_options, [])
   end
 
   defp authorization_header(%{session_id: nil}), do: []

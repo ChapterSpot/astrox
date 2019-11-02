@@ -1,4 +1,4 @@
-defmodule Forcex.Bulk.JobHandler do
+defmodule Astrox.Bulk.JobHandler do
   @callback handle_job_created(map, any) :: {:noreply, any}
   @callback handle_job_closed(map, any) :: {:noreply, any}
   @callback handle_job_all_batches_complete(map, any) :: {:noreply, any}
@@ -6,7 +6,7 @@ defmodule Forcex.Bulk.JobHandler do
 
   defmacro __using__(_env) do
     quote do
-      @behaviour Forcex.Bulk.JobHandler
+      @behaviour Astrox.Bulk.JobHandler
       def handle_info({:job_created, job}, state) do
         handle_job_created(job, state)
       end

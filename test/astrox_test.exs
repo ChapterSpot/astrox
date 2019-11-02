@@ -1,4 +1,4 @@
-defmodule ForcexTest do
+defmodule AstroxTest do
   use ExUnit.Case
 
   import Mox
@@ -15,23 +15,23 @@ defmodule ForcexTest do
       totalSize: 5989
     }
 
-    endpoint = "https://forcex.my.salesforce.com"
+    endpoint = "https://astrox.my.salesforce.com"
     api_version = "43.0"
     auth_header = [{"Authorization", "Bearer sometoken"}]
     query_path = "/services/data/v43.0/query"
     query = "select Id, Name from Account order by CreatedDate desc"
     query_url = "#{endpoint}#{query_path}/?#{%{"q" => query} |> URI.encode_query}"
 
-    Forcex.Api.MockHttp
+    Astrox.Api.MockHttp
     |> expect(:raw_request, fn(:get, ^query_url, _, ^auth_header, _) -> response end)
 
-      client = %Forcex.Client{
+      client = %Astrox.Client{
         endpoint: endpoint,
         authorization_header: auth_header,
         api_version: api_version,
         services: %{query: query_path}
       }
 
-      assert Forcex.query(query, client) == response
+      assert Astrox.query(query, client) == response
   end
 end

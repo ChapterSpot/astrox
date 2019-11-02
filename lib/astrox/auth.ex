@@ -1,4 +1,4 @@
-defmodule Forcex.Auth do
+defmodule Astrox.Auth do
   @moduledoc """
     Auth behavior
   """

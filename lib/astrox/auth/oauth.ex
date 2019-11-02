@@ -1,9 +1,9 @@
-defmodule Forcex.Auth.OAuth do
+defmodule Astrox.Auth.OAuth do
   @moduledoc """
   Auth via OAuth
   """
   require Logger
-  @behaviour Forcex.Auth
+  @behaviour Astrox.Auth
 
   def login(conf, starting_struct) do
     login_payload =
@@ -13,7 +13,7 @@ defmodule Forcex.Auth.OAuth do
       |> Map.delete(:endpoint)
 
     "/services/oauth2/token?#{URI.encode_query(login_payload)}"
-    |> Forcex.post(starting_struct)
+    |> Astrox.post(starting_struct)
     |> handle_login_response
     |> maybe_add_api_version(starting_struct)
   end
@@ -31,7 +31,7 @@ defmodule Forcex.Auth.OAuth do
 
   defp handle_login_response({status_code, error_message}) do
     Logger.warn(
-      "Cannot log into SFDC API. Please ensure you have Forcex properly configured. Got error code #{
+      "Cannot log into SFDC API. Please ensure you have Astrox properly configured. Got error code #{
         status_code
       } and message #{inspect(error_message)}"
     )

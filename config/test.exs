@@ -1,3 +1,3 @@
 use Mix.Config
 
-config :forcex, :api, Forcex.Api.MockHttp
+config :astrox, :api, Astrox.Api.MockHttp

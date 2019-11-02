@@ -1,6 +1,6 @@
-defmodule Forcex.Bulk.JobWorker do
+defmodule Astrox.Bulk.JobWorker do
   use GenServer
-  import Forcex.Bulk.Util
+  import Astrox.Bulk.Util
 
   def start_link(params) do
     GenServer.start_link(__MODULE__, params)
@@ -17,7 +17,7 @@ defmodule Forcex.Bulk.JobWorker do
     handlers = Keyword.get(state,:handlers, [])
     interval = Keyword.get(state, :status_interval, 10000)
 
-    job = Forcex.Bulk.create_query_job(sobject, client)
+    job = Astrox.Bulk.create_query_job(sobject, client)
     notify_handlers({:job_created, job}, handlers)
     :timer.send_interval(interval, :fetch_status)
 
@@ -29,7 +29,7 @@ defmodule Forcex.Bulk.JobWorker do
     job = Keyword.fetch!(state, :job)
     handlers = Keyword.get(state,:handlers, [])
 
-    updated_job = Forcex.Bulk.fetch_job_status(job, client)
+    updated_job = Astrox.Bulk.fetch_job_status(job, client)
 
     notify_handlers({:job_status, updated_job}, handlers)
 
@@ -40,7 +40,7 @@ defmodule Forcex.Bulk.JobWorker do
     client = Keyword.fetch!(state, :client)
     job = Keyword.fetch!(state, :job)
     handlers = Keyword.get(state, :handlers, [])
-    closed_job = %{state: "Closed"} = Forcex.Bulk.close_job(job, client)
+    closed_job = %{state: "Closed"} = Astrox.Bulk.close_job(job, client)
 
     notify_handlers({:job_closed, closed_job}, handlers)
     {:stop, :normal, Keyword.put(state, :job, closed_job)}

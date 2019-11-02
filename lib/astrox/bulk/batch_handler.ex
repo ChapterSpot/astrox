@@ -1,4 +1,4 @@
-defmodule Forcex.Bulk.BatchHandler do
+defmodule Astrox.Bulk.BatchHandler do
   @callback handle_batch_status(map, any) :: {:noreply, any}
   @callback handle_batch_created(map, any) :: {:noreply, any}
   @callback handle_batch_completed(map, any) :: {:noreply, any}
@@ -7,7 +7,7 @@ defmodule Forcex.Bulk.BatchHandler do
 
   defmacro __using__(_env) do
     quote do
-      @behaviour Forcex.Bulk.BatchHandler
+      @behaviour Astrox.Bulk.BatchHandler
       def handle_info({:batch_status, %{state: "Completed"} = batch}, state) do
         handle_batch_completed(batch, state)
       end

@@ -1,18 +1,18 @@
-defmodule Forcex.Api.Http do
+defmodule Astrox.Api.Http do
   @moduledoc """
   HTTP communication with Salesforce API
   """
 
-  @behaviour Forcex.Api
+  @behaviour Astrox.Api
   require Logger
   use HTTPoison.Base
 
-  @user_agent [{"User-agent", "forcex"}]
+  @user_agent [{"User-agent", "astrox"}]
   @accept [{"Accept", "application/json"}]
   @accept_encoding [{"Accept-Encoding", "gzip,deflate"}]
 
   @type method :: :get | :put | :post | :patch | :delete
-  @type forcex_response :: map | {number, any} | String.t
+  @type astrox_response :: map | {number, any} | String.t
 
   def raw_request(method, url, body, headers, options) do
     response = method |> request!(url, body, headers, extra_options() ++ options) |> process_response
@@ -22,10 +22,10 @@ defmodule Forcex.Api.Http do
 
   @spec extra_options :: list
   defp extra_options() do
-    Application.get_env(:forcex, :request_options, [])
+    Application.get_env(:astrox, :request_options, [])
   end
 
-  @spec process_response(HTTPoison.Response.t) :: forcex_response
+  @spec process_response(HTTPoison.Response.t) :: astrox_response
   defp process_response(%HTTPoison.Response{body: body, headers: %{"Content-Encoding" => "gzip"} = headers} = resp) do
     %{resp | body: :zlib.gunzip(body), headers: Map.drop(headers, ["Content-Encoding"])}
     |> process_response

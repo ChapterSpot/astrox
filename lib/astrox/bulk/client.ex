@@ -1,4 +1,4 @@
-defmodule Forcex.Bulk.Client do
+defmodule Astrox.Bulk.Client do
   defstruct session_id: nil, api_version: "43.0", endpoint: "https://login.salesforce.com", host: nil
 
   require Logger
@@ -26,7 +26,7 @@ defmodule Forcex.Bulk.Client do
 
   Application configuration
 
-      config :forcex, Forcex.Bulk.Client,
+      config :astrox, Astrox.Bulk.Client,
         username: "user@example.com",
         password: "my_super_secret_password",
         security_token: "EMAILED_FROM_SALESFORCE"
@@ -34,7 +34,7 @@ defmodule Forcex.Bulk.Client do
   Will require additional call to `locate_services/1` to identify which Force.com
   services are availabe for your deployment.
 
-      client = Forcex.Bulk.Client.login
+      client = Astrox.Bulk.Client.login
   """
   def login(c \\ default_config()) do
     login(c, %__MODULE__{})
@@ -95,7 +95,7 @@ defmodule Forcex.Bulk.Client do
     |> System.get_env
     |> case do
       nil ->
-        Application.get_env(:forcex, __MODULE__, [])
+        Application.get_env(:astrox, __MODULE__, [])
         |> Keyword.get(key)
       val -> val
     end

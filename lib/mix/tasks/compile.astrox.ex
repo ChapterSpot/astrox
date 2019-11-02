@@ -1,12 +1,12 @@
-defmodule Mix.Tasks.Compile.Forcex do
+defmodule Mix.Tasks.Compile.Astrox do
   use Mix.Task
 
   @recursive false
 
   def run(_) do
-    {:ok, _} = Application.ensure_all_started(:forcex)
+    {:ok, _} = Application.ensure_all_started(:astrox)
 
-    client = Forcex.Client.login
+    client = Astrox.Client.login
 
     case client do
       %{access_token: nil} -> IO.puts("Invalid configuration/credentials. Cannot generate SObjects.")
@@ -17,11 +17,11 @@ defmodule Mix.Tasks.Compile.Forcex do
   end
 
   defp generate_modules(client) do
-    client = Forcex.Client.locate_services(client)
+    client = Astrox.Client.locate_services(client)
 
     sobjects =
       client
-      |> Forcex.describe_global
+      |> Astrox.describe_global
       |> Map.get(:sobjects)
 
     for sobject <- sobjects do
@@ -38,10 +38,10 @@ defmodule Mix.Tasks.Compile.Forcex do
     describe_url = urls.describe
     sobject_url = urls.sobject
     row_template_url = urls.rowTemplate
-    full_description = Forcex.describe_sobject(name, client)
+    full_description = Astrox.describe_sobject(name, client)
 
     quote location: :keep do
-      defmodule unquote(Module.concat(Forcex.SObject, name)) do
+      defmodule unquote(Module.concat(Astrox.SObject, name)) do
         @moduledoc """
         Dynamically generated module for `#{unquote(full_description.label)}`
 
@@ -57,7 +57,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         """
         def describe(client) do
           unquote(describe_url)
-          |> Forcex.get(client)
+          |> Astrox.get(client)
         end
 
         @doc """
@@ -67,7 +67,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         """
         def basic_info(client) do
           unquote(sobject_url)
-          |> Forcex.get(client)
+          |> Astrox.get(client)
         end
 
         @doc """
@@ -81,7 +81,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         """
         def create(sobject, client) when is_map(sobject) do
           unquote(sobject_url)
-          |> Forcex.post(sobject, client)
+          |> Astrox.post(sobject, client)
         end
 
         @doc """
@@ -96,7 +96,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         def update(id, changeset, client) do
           unquote(row_template_url)
           |> String.replace("{ID}", id)
-          |> Forcex.patch(changeset, client)
+          |> Astrox.patch(changeset, client)
         end
 
         @doc """
@@ -110,7 +110,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         def delete(id, client) do
           unquote(row_template_url)
           |> String.replace("{ID}", id)
-          |> Forcex.delete(client)
+          |> Astrox.delete(client)
         end
 
         @doc """
@@ -124,7 +124,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         def get(id, client) do
           unquote(row_template_url)
           |> String.replace("{ID}", id)
-          |> Forcex.get(client)
+          |> Astrox.get(client)
         end
 
         @doc """
@@ -139,7 +139,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         def deleted_between(start_date, end_date, client) when is_binary(start_date) and is_binary(end_date) do
           params = %{"start" => start_date, "end" => end_date} |> URI.encode_query
           unquote(sobject_url) <> "/deleted?#{params}"
-          |> Forcex.get(client)
+          |> Astrox.get(client)
         end
         def deleted_between(start_date, end_date, client) do
           deleted_between(
@@ -160,7 +160,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         def updated_between(start_date, end_date, client) when is_binary(start_date) and is_binary(end_date) do
           params = %{"start" => start_date, "end" => end_date} |> URI.encode_query
           unquote(sobject_url) <> "/updated?#{params}"
-          |> Forcex.get(client)
+          |> Astrox.get(client)
         end
         def updated_between(start_date, end_date, client) do
           updated_between(
@@ -181,7 +181,7 @@ defmodule Mix.Tasks.Compile.Forcex do
         def get_blob(id, field, client) do
           unquote(row_template_url) <> "/#{field}"
           |> String.replace("{ID}", id)
-          |> Forcex.get(client)
+          |> Astrox.get(client)
         end
 
         @doc """
@@ -195,10 +195,10 @@ defmodule Mix.Tasks.Compile.Forcex do
         """
         def by_external(field, value, client) do
           unquote(sobject_url) <> "/#{field}/#{value}"
-          |> Forcex.get(client)
+          |> Astrox.get(client)
         end
       end
-      IO.puts "Generated #{unquote(Module.concat(Forcex.SObject, name))}"
+      IO.puts "Generated #{unquote(Module.concat(Astrox.SObject, name))}"
     end
 
   end

@@ -1,1 +1,1 @@
-Mox.defmock(Forcex.Api.MockHttp, for: Forcex.Api)
+Mox.defmock(Astrox.Api.MockHttp, for: Astrox.Api)
