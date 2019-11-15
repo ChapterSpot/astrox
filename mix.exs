@@ -8,7 +8,7 @@ defmodule Astrox.Mixfile do
   def project do
     [
       app: :astrox,
-      version: "0.8.3",
+      version: "0.9.0",
       elixir: "~> 1.5",
       name: "Astrox",
       description: @description,
