@@ -1,6 +1,9 @@
 defmodule Astrox.Bulk do
+  @moduledoc """
+  HTTP communication with Salesforce's Bulk API
+  """
+
   use HTTPoison.Base
-  require Logger
 
   @user_agent [{"User-agent", "astrox"}]
   @accept [{"Accept", "application/json"}]
@@ -12,37 +15,50 @@ defmodule Astrox.Bulk do
   @type job :: map
   @type batch :: map
 
+  @impl HTTPoison.Base
   def process_request_headers(headers),
     do: headers ++ @user_agent ++ @accept ++ @accept_encoding ++ @content_type
 
+  @impl HTTPoison.Base
   def process_headers(headers), do: Map.new(headers)
 
-  def process_response(
-        %HTTPoison.Response{body: body, headers: %{"Content-Encoding" => "gzip"} = headers} = resp
-      ) do
-    %{resp | body: :zlib.gunzip(body), headers: Map.drop(headers, ["Content-Encoding"])}
-    |> process_response
+  @impl HTTPoison.Base
+  def process_response(response) do
+    response
+    |> maybe_gunzip()
+    |> maybe_json_decode()
+    |> unpack_body()
   end
 
-  def process_response(
-        %HTTPoison.Response{
-          body: body,
-          headers: %{"Content-Type" => "application/json" <> _} = headers
-        } = resp
-      ) do
+  defp maybe_gunzip(
+         %HTTPoison.Response{body: body, headers: %{"Content-Encoding" => "gzip"} = headers} =
+           resp
+       ) do
+    %{resp | body: :zlib.gunzip(body), headers: Map.drop(headers, ["Content-Encoding"])}
+  end
+
+  defp maybe_gunzip(resp), do: resp
+
+  defp maybe_json_decode(
+         %HTTPoison.Response{
+           body: body,
+           headers: %{"Content-Type" => "application/json" <> _} = headers
+         } = resp
+       ) do
     %{
       resp
       | body: Poison.decode!(body, keys: :atoms),
         headers: Map.drop(headers, ["Content-Type"])
     }
-    |> process_response
   end
 
-  def process_response(%HTTPoison.Response{body: body, status_code: status})
-      when status < 300 and status >= 200,
-      do: body
+  defp maybe_json_decode(resp), do: resp
 
-  def process_response(%HTTPoison.Response{body: body, status_code: status}), do: {status, body}
+  defp unpack_body(%HTTPoison.Response{body: body, status_code: status})
+       when status < 300 and status >= 200,
+       do: body
+
+  defp unpack_body(%HTTPoison.Response{body: body, status_code: status}), do: {status, body}
 
   defp extra_options() do
     Application.get_env(:astrox, :request_options, [])

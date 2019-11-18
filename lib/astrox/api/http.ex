@@ -12,8 +12,8 @@ defmodule Astrox.Api.Http do
   @accept_encoding [{"Accept-Encoding", "gzip,deflate"}]
 
   @type method :: :get | :put | :post | :patch | :delete
-  @type astrox_response :: map | {number, any} | String.t()
 
+  @impl Astrox.Api
   def raw_request(method, url, body, headers, options) do
     response =
       method |> request!(url, body, headers, extra_options() ++ options) |> process_response
@@ -27,15 +27,25 @@ defmodule Astrox.Api.Http do
     Application.get_env(:astrox, :request_options, [])
   end
 
-  @spec process_response(HTTPoison.Response.t()) :: astrox_response
-  defp process_response(
+  @impl HTTPoison.Base
+  def process_response(response) do
+    response
+    |> maybe_gunzip()
+    |> maybe_deflate()
+    |> maybe_json_decode()
+    |> unpack_body()
+  end
+
+  defp maybe_gunzip(
          %HTTPoison.Response{body: body, headers: %{"Content-Encoding" => "gzip"} = headers} =
            resp
        ) do
     %{resp | body: :zlib.gunzip(body), headers: Map.drop(headers, ["Content-Encoding"])}
   end
 
-  defp process_response(
+  defp maybe_gunzip(resp), do: resp
+
+  defp maybe_deflate(
          %HTTPoison.Response{body: body, headers: %{"Content-Encoding" => "deflate"} = headers} =
            resp
        ) do
@@ -46,28 +56,28 @@ defmodule Astrox.Api.Http do
     :zlib.close(zstream)
 
     %{resp | body: uncompressed_data, headers: Map.drop(headers, ["Content-Encoding"])}
-    |> process_response
   end
 
-  defp process_response(
+  defp maybe_deflate(resp), do: resp
+
+  defp maybe_json_decode(
          %HTTPoison.Response{
            body: body,
            headers: %{"Content-Type" => "application/json" <> _} = headers
          } = resp
        ) do
-    %{
-      resp
-      | body: Poison.decode!(body, keys: :atoms),
-        headers: Map.drop(headers, ["Content-Type"])
-    }
-    |> process_response
+    decoded_body = Poison.decode!(body, keys: :atoms)
+    %{resp | body: decoded_body, headers: Map.drop(headers, ["Content-Type"])}
   end
 
-  defp process_response(%HTTPoison.Response{body: body, status_code: 200}), do: body
-  defp process_response(%HTTPoison.Response{body: body, status_code: status}), do: {status, body}
+  defp maybe_json_decode(resp), do: resp
 
+  defp unpack_body(%HTTPoison.Response{body: body, status_code: 200}), do: body
+  defp unpack_body(%HTTPoison.Response{body: body, status_code: status}), do: {status, body}
+
+  @impl HTTPoison.Base
   def process_request_headers(headers), do: headers ++ @user_agent ++ @accept ++ @accept_encoding
 
-  @spec process_headers(list({String.t(), String.t()})) :: map
+  @impl HTTPoison.Base
   def process_headers(headers), do: Map.new(headers)
 end
