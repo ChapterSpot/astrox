@@ -11,8 +11,6 @@ defmodule Astrox.Api.Http do
   @accept [{"Accept", "application/json"}]
   @accept_encoding [{"Accept-Encoding", "gzip,deflate"}]
 
-  @type method :: :get | :put | :post | :patch | :delete
-
   @impl Astrox.Api
   def raw_request(method, url, body, headers, options) do
     response =
