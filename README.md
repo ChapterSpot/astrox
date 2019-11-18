@@ -207,6 +207,11 @@ See https://www.salesforce.com/us/developer/docs/api_rest/
 - [x] Tabs
 - [x] Themes
 
+# Migrating from ForceX (**BREAKING CHANGES**)
+
+- Find/replace `Forcex` -> `Astrox`
+- Any uses of `Astrox.Bulk.get/3` or `Astrox.Bulk.post/3` must be renamed to `Astrox.Bulk.authed_get/3` or `Astrox.Bulk.authed_post/3`
+
 # License
 
 MIT License, see LICENSE

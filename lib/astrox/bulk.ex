@@ -78,12 +78,12 @@ defmodule Astrox.Bulk do
     request!(method, url, body, headers, extra_options() ++ options) |> process_response
   end
 
-  def get(path, headers \\ [], client) do
+  def authed_get(path, headers \\ [], client) do
     url = "https://#{client.host}/services/async/#{client.api_version}" <> path
     raw_request(:get, url, "", headers ++ authorization_header(client), [])
   end
 
-  def post(path, body \\ "", client) do
+  def authed_post(path, body \\ "", client) do
     url = "https://#{client.host}/services/async/#{client.api_version}" <> path
     json_request(:post, url, body, authorization_header(client), [])
   end
@@ -97,7 +97,7 @@ defmodule Astrox.Bulk do
       "contentType" => "JSON"
     }
 
-    post("/job", payload, client)
+    authed_post("/job", payload, client)
   end
 
   @spec close_job(job | id, map) :: job
@@ -106,14 +106,14 @@ defmodule Astrox.Bulk do
   end
 
   def close_job(id, client) when is_binary(id) do
-    post("/job/#{id}", %{"state" => "Closed"}, client)
+    authed_post("/job/#{id}", %{"state" => "Closed"}, client)
   end
 
   @spec fetch_job_status(job | id, map) :: job
   def fetch_job_status(job, client) when is_map(job), do: fetch_job_status(job.id, client)
 
   def fetch_job_status(id, client) when is_binary(id) do
-    get("/job/#{id}", client)
+    authed_get("/job/#{id}", client)
   end
 
   @spec create_query_batch(String.t(), job | id, map) :: job
@@ -136,7 +136,7 @@ defmodule Astrox.Bulk do
   end
 
   def fetch_batch_status(id, job_id, client) when is_binary(id) and is_binary(job_id) do
-    get("/job/#{job_id}/batch/#{id}", client)
+    authed_get("/job/#{job_id}/batch/#{id}", client)
   end
 
   @spec fetch_batch_result_status(batch, map) :: list(String.t())
@@ -147,7 +147,7 @@ defmodule Astrox.Bulk do
   @spec fetch_batch_result_status(id, id, map) :: list(String.t())
   def fetch_batch_result_status(batch_id, job_id, client)
       when is_binary(batch_id) and is_binary(job_id) do
-    get("/job/#{job_id}/batch/#{batch_id}/result", client)
+    authed_get("/job/#{job_id}/batch/#{batch_id}/result", client)
   end
 
   @spec fetch_results(id, batch, map) :: list(map)
@@ -158,6 +158,6 @@ defmodule Astrox.Bulk do
   @spec fetch_results(id, id, id, map) :: list(map)
   def fetch_results(id, batch_id, job_id, client)
       when is_binary(id) and is_binary(batch_id) and is_binary(job_id) do
-    get("/job/#{job_id}/batch/#{batch_id}/result/#{id}", client)
+    authed_get("/job/#{job_id}/batch/#{batch_id}/result/#{id}", client)
   end
 end
