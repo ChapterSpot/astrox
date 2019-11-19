@@ -13,8 +13,14 @@ defmodule Astrox.Api.Http do
 
   @impl Astrox.Api
   def raw_request(method, url, body, headers, options) do
+    start = System.monotonic_time()
+
     response =
       method |> request!(url, body, headers, extra_options() ++ options) |> process_response
+
+    duration = System.monotonic_time() - start
+    metadata = %{method: method, url: url, options: options}
+    :telemetry.execute([:astrox, :rest, :request], %{duration: duration}, metadata)
 
     Logger.debug("#{__ENV__.module}.#{elem(__ENV__.function, 0)} response=" <> inspect(response))
     response

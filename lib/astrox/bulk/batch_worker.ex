@@ -8,6 +8,7 @@ defmodule Astrox.Bulk.BatchWorker do
 
   def init({:query, opts}) do
     send(self(), :after_init)
+    # TODO this needs to switch to using handle_continue
     {:ok, opts}
   end
 

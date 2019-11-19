@@ -5,9 +5,19 @@ defmodule Astrox.Client do
 
   defstruct api_version: "43.0",
             authorization_header: [],
+            host: "NOT SET YET",
+            session_id: "NOT SET YET",
             endpoint: @default_endpoint,
             services: %{}
 
+  @type t :: %__MODULE__{
+          api_version: binary,
+          host: binary,
+          session_id: binary,
+          authorization_header: Astrox.Api.Http.headers(),
+          endpoint: binary,
+          services: map
+        }
   @moduledoc """
   This client delegates login to the appropriate endpoint depending on the
   type of credentials you have, and upon successful authentication keeps track
