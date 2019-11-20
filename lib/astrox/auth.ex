@@ -3,5 +3,5 @@ defmodule Astrox.Auth do
     Auth behavior
   """
 
-  @callback login(config :: map(), struct) :: map()
+  @callback login(map, struct) :: map
 end

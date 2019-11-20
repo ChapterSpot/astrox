@@ -1,10 +1,15 @@
-defmodule Astrox.Api do
+defmodule Astrox.API do
   @moduledoc """
   Behavior for requests to Salesforce API
   """
 
-  @type method :: :get | :put | :post | :patch | :delete
-  @type astrox_response :: map | {number, any} | String.t()
+  alias Astrox.Http
 
-  @callback raw_request(method, String.t(), map | String.t(), list, list) :: astrox_response
+  @callback raw_request(
+              Http.method(),
+              Http.url(),
+              Http.body(),
+              Http.headers(),
+              Http.options()
+            ) :: Http.response()
 end

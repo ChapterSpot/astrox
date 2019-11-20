@@ -14,7 +14,7 @@ defmodule Astrox.Client do
           api_version: binary,
           host: binary,
           session_id: binary,
-          authorization_header: Astrox.Api.Http.headers(),
+          authorization_header: Astrox.Http.headers(),
           endpoint: binary,
           services: map
         }
@@ -40,6 +40,7 @@ defmodule Astrox.Client do
         security_token: "...",
         client_id: "...",
         client_secret: "...",
+        refresh_token: "...",
         endpoint: "..."
       }
 
@@ -49,6 +50,7 @@ defmodule Astrox.Client do
     - `SALESFORCE_SECURITY_TOKEN`
     - `SALESFORCE_CLIENT_ID`
     - `SALESFORCE_CLIENT_SECRET`
+    - `SALESFORCE_REFRESH_TOKEN`
     - `SALESFORCE_ENDPOINT`
 
   Application configuration
@@ -59,10 +61,12 @@ defmodule Astrox.Client do
         security_token: "EMAILED_FROM_SALESFORCE",
         client_id: "CONNECTED_APP_OAUTH_CLIENT_ID",
         client_secret: "CONNECTED_APP_OAUTH_CLIENT_SECRET",
+        refresh_token: "CONNECTED_APP_OAUTH_REFRESH_TOKEN",
         endpoint: "login.salesforce.com"
 
+  If `client_id` and `refresh_token` are passed, then login via refresh_token will be attempted.
   If no `client_id` is passed login via session id will be attempted with
-  `security_token`.
+  `security_token`, otherwise `oauth` is assumed
 
   Will require additional call to `locate_services/1` to identify which Force.com
   services are availabe for your deployment.

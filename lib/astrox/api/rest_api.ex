@@ -1,17 +1,23 @@
-defmodule Astrox.Api.Http do
+defmodule Astrox.API.RestAPI do
   @moduledoc """
-  HTTP communication with Salesforce API
+  HTTP communication with Salesforce Rest API
   """
 
-  @behaviour Astrox.Api
   require Logger
   use HTTPoison.Base
+  alias Astrox.Http
 
   @user_agent [{"User-agent", "astrox"}]
   @accept [{"Accept", "application/json"}]
   @accept_encoding [{"Accept-Encoding", "gzip,deflate"}]
 
-  @impl Astrox.Api
+  @spec raw_request(
+          Http.method(),
+          Http.url(),
+          Http.body(),
+          Http.headers(),
+          Http.options()
+        ) :: Astrox.astrox_response()
   def raw_request(method, url, body, headers, options) do
     start = System.monotonic_time()
 
@@ -19,16 +25,14 @@ defmodule Astrox.Api.Http do
       method |> request!(url, body, headers, extra_options() ++ options) |> process_response
 
     duration = System.monotonic_time() - start
+
+    unpacked_response = unpack_body(response)
+
     metadata = %{method: method, url: url, options: options}
     :telemetry.execute([:astrox, :rest, :request], %{duration: duration}, metadata)
 
     Logger.debug("#{__ENV__.module}.#{elem(__ENV__.function, 0)} response=" <> inspect(response))
-    response
-  end
-
-  @spec extra_options :: list
-  defp extra_options() do
-    Application.get_env(:astrox, :request_options, [])
+    unpacked_response
   end
 
   @impl HTTPoison.Base
@@ -37,9 +41,24 @@ defmodule Astrox.Api.Http do
     |> maybe_gunzip()
     |> maybe_deflate()
     |> maybe_json_decode()
-    |> unpack_body()
   end
 
+  @impl HTTPoison.Base
+  def process_request_headers(headers), do: headers ++ @user_agent ++ @accept ++ @accept_encoding
+
+  @impl HTTPoison.Base
+  def process_headers(headers), do: Map.new(headers)
+
+  #####################
+  # private functions #
+  #####################
+
+  @spec extra_options :: list
+  defp extra_options() do
+    Application.get_env(:astrox, :request_options, [])
+  end
+
+  @spec maybe_gunzip(Http.response()) :: Http.response()
   defp maybe_gunzip(
          %HTTPoison.Response{body: body, headers: %{"Content-Encoding" => "gzip"} = headers} =
            resp
@@ -49,6 +68,7 @@ defmodule Astrox.Api.Http do
 
   defp maybe_gunzip(resp), do: resp
 
+  @spec maybe_deflate(Http.response()) :: Http.response()
   defp maybe_deflate(
          %HTTPoison.Response{body: body, headers: %{"Content-Encoding" => "deflate"} = headers} =
            resp
@@ -64,6 +84,7 @@ defmodule Astrox.Api.Http do
 
   defp maybe_deflate(resp), do: resp
 
+  @spec maybe_json_decode(Http.response()) :: Http.response()
   defp maybe_json_decode(
          %HTTPoison.Response{
            body: body,
@@ -76,12 +97,7 @@ defmodule Astrox.Api.Http do
 
   defp maybe_json_decode(resp), do: resp
 
+  @spec unpack_body(Astrox.Http.response()) :: Astrox.astrox_response()
   defp unpack_body(%HTTPoison.Response{body: body, status_code: 200}), do: body
   defp unpack_body(%HTTPoison.Response{body: body, status_code: status}), do: {status, body}
-
-  @impl HTTPoison.Base
-  def process_request_headers(headers), do: headers ++ @user_agent ++ @accept ++ @accept_encoding
-
-  @impl HTTPoison.Base
-  def process_headers(headers), do: Map.new(headers)
 end

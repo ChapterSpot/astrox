@@ -5,7 +5,7 @@ defmodule Astrox.Auth.SessionId do
 
   require Logger
   @behaviour Astrox.Auth
-  @api Application.get_env(:astrox, :api) || Astrox.Api.Http
+  @api Application.get_env(:astrox, :api)
 
   def login(conf, starting_struct) do
     schema = "http://www.w3.org/2001/XMLSchema"

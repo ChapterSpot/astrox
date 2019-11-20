@@ -2,22 +2,27 @@ defmodule Astrox.Auth.OAuth do
   @moduledoc """
   Auth via OAuth
   """
+
   require Logger
+
+  alias Astrox.Client
+
   @behaviour Astrox.Auth
 
-  def login(%{refresh_token: _} = conf, starting_struct) do
+  @spec login(map(), Client.t()) :: map()
+  def login(%{refresh_token: _} = conf, %Client{} = client) do
     login_payload =
       conf
       |> Map.put(:grant_type, "refresh_token")
       |> Map.delete(:endpoint)
 
     "/services/oauth2/token?#{URI.encode_query(login_payload)}"
-    |> Astrox.post(starting_struct)
-    |> handle_login_response
-    |> maybe_add_api_version(starting_struct)
+    |> Astrox.post("", client)
+    |> handle_login_response()
+    |> maybe_add_api_version(client)
   end
 
-  def login(conf, starting_struct) do
+  def login(conf, client) do
     login_payload =
       conf
       |> Map.put(:password, "#{conf.password}#{conf.security_token}")
@@ -25,11 +30,12 @@ defmodule Astrox.Auth.OAuth do
       |> Map.delete(:endpoint)
 
     "/services/oauth2/token?#{URI.encode_query(login_payload)}"
-    |> Astrox.post(starting_struct)
-    |> handle_login_response
-    |> maybe_add_api_version(starting_struct)
+    |> Astrox.post("", client)
+    |> handle_login_response()
+    |> maybe_add_api_version(client)
   end
 
+  @spec handle_login_response(any()) :: map()
   defp handle_login_response(%{
          access_token: token,
          token_type: token_type,
@@ -46,6 +52,16 @@ defmodule Astrox.Auth.OAuth do
       "Cannot log into SFDC API. Please ensure you have Astrox properly configured. Got error code #{
         status_code
       } and message #{inspect(error_message)}"
+    )
+
+    %{}
+  end
+
+  defp handle_login_response(resp) do
+    Logger.warn(
+      "Cannot log into SFDC API. Please ensure you have Astrox properly configured. Unexpected response: #{
+        inspect(resp)
+      }"
     )
 
     %{}

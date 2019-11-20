@@ -2,7 +2,7 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :astrox, :api, Astrox.Api.Http
+config :astrox, :api, Astrox.API.RestAPI
 
 config :logger,
        :console,

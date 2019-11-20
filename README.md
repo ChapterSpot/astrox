@@ -46,26 +46,6 @@ This can also be invoked automatically by adding Astrox to your project's compil
 compilers: [:astrox] ++ Mix.compilers,
 ```
 
-## Bulk API Usage
-
-Astrox has an example Bulk API query job controller. Here's roughly how that can
-work.
-
-```elixir
-client = Astrox.Bulk.Client.login
-[
-  "Account",
-  "Campaign",
-  "Contact",
-  "Lead",
-  "Opportunity",
-  "OpportunityLineItem",
-]
-|> Enum.map(fn sobject -> {sobject, ["select Id, Name from #{sobject}"]} end)
-|> Enum.map(fn {sobject, queries} ->
-Astrox.Bulk.JobController.start_link({:query, sobject, queries, client}) end)
-```
-
 ## Configuration
 
 The `Astrox.Client` is configured to read login information either from
@@ -210,7 +190,7 @@ See https://www.salesforce.com/us/developer/docs/api_rest/
 # Migrating from ForceX (**BREAKING CHANGES**)
 
 - Find/replace `Forcex` -> `Astrox`
-- Any uses of `Astrox.Bulk.get/3` or `Astrox.Bulk.post/3` must be renamed to `Astrox.Bulk.authed_get/3` or `Astrox.Bulk.authed_post/3`
+- Don't use Bulk api (removed will add back in a sane way)
 
 # License
 
