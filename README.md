@@ -12,7 +12,7 @@ Add Astrox to your dependency list
 
 ```elixir
   defp deps do
-    [ {:astrox, "~> 0.4"}
+    [ {:astrox, "~> 0.11"}
     ]
   end
 ```
