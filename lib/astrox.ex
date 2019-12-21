@@ -7,7 +7,7 @@ defmodule Astrox do
 
   alias Astrox.{Client, Http}
 
-  @api Application.get_env(:astrox, :api)
+  @api Application.get_env(:astrox, :api) || Astrox.API.RestAPI
 
   @type astrox_response :: map | {number, any} | String.t()
 
