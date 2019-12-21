@@ -47,7 +47,7 @@ defmodule Astrox.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger, :httpoison, :erlsom, :exjsx, :ssl, :html_entities]]
+    [extra_applications: [:logger, :httpoison, :erlsom, :exjsx, :ssl, :html_entities, :poison]]
   end
 
   # Dependencies can be Hex packages:
