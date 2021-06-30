@@ -1,19 +1,17 @@
 defmodule Astrox.Mixfile do
   use Mix.Project
 
-  @description """
-    Elixir library for the Force.com / SalesForce / SFDC REST API
-  """
+  @description "Elixir library for the Force.com / SalesForce / SFDC REST API"
+  @github "https://github.com/ChapterSpot/astrox"
 
   def project do
     [
       app: :astrox,
-      version: "0.11.0",
-      elixir: "~> 1.5",
+      version: get_version(),
+      elixir: "~> 1.11",
       name: "Astrox",
       description: @description,
       package: package(),
-      # compilers: [:astrox] ++ Mix.compilers,
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
@@ -23,22 +21,24 @@ defmodule Astrox.Mixfile do
         docs: :dev,
         "hex.docs": :dev
       ],
-      dialyzer: [
-        plt_add_deps: :transitive,
-        ignore_warnings: ".dialyzer_ignore.exs",
-        flags: [
-          # "-Wunmatched_returns",
-          # "-Wrace_conditions",
-          # "-Wunderspecs",
-          # "-Wunknown",
-          # "-Woverspecs",
-          # "-Wspecdiffs",
-        ]
-      ],
+      dialyzer: dialyzer(),
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
+
+  defp dialyzer do
+    [
+      plt_add_deps: :transitive,
+      ignore_warnings: ".dialyzer_ignore.exs",
+      plt_core_path: "priv/plts",
+      plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+    ]
+  end
+
+  defp get_version, do: File.read!("VERSION") |> String.trim()
+
+  defp files, do: ~w(lib mix.exs README* VERSION)
 
   defp elixirc_paths(:test), do: ["test/support", "lib"]
   defp elixirc_paths(_), do: ["lib"]
@@ -67,7 +67,7 @@ defmodule Astrox.Mixfile do
       {:timex, "~> 2.0 or ~> 3.0"},
       {:erlsom, "~> 1.4"},
       {:excoveralls, "~> 0.5", only: :test},
-      {:ex_doc, "~> 0.11", only: :dev},
+      {:ex_doc, ">= 0.0.0", only: :dev},
       {:earmark, "~> 1.1", only: :dev, override: true},
       {:dialyxir, "~> 1.0.0-rc.3", only: [:dev, :test], runtime: false},
       {:mox, "~> 0.3", only: :test},
@@ -79,9 +79,14 @@ defmodule Astrox.Mixfile do
 
   defp package do
     [
+      organization: "chapterspot",
+      description: @description,
       maintainers: ["Manuel Zubieta"],
       licenses: ["MIT"],
-      links: %{"Github" => "https://github.com/ChapterSpot/astrox"}
+      files: files(),
+      links: %{"Github" => @github},
+      source_url: @github,
+      homepage_url: "https://chapterspot.hexdocs.pm/astrox"
     ]
   end
 end

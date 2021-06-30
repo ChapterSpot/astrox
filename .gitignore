@@ -7,3 +7,7 @@ erl_crash.dump
 .mix_tasks
 .elixir_ls
 .env*
+
+# dialyzer
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
